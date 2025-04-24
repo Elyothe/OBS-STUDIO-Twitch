@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Overlay Caméra Kena - Particules Libres</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        overflow: hidden;
+      }
+
+      .camera-frame {
+        width: 640px;
+        height: 360px;
+        border: 6px solid #353f2c;
+        position: relative;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #aefdfd, #3ad5c9);
+        opacity: 0.75;
+        box-shadow: 0 0 8px #3ad5c9cc, 0 0 12px #aefdfdcc;
+        pointer-events: none;
+      }
+      .clock {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: #aefdfd;
+        text-shadow: 0 0 5px #3ad5c9, 0 0 15px #3ad5c9, 0 0 30px #3ad5c9;
+        animation: flicker 6.7s infinite;
+        z-index: 10;
+      }
+      @keyframes flicker {
+        0%,
+        18%,
+        22%,
+        25%,
+        53%,
+        57%,
+        100% {
+          opacity: 1;
+          text-shadow: 0 0 5px #3ad5c9, 0 0 15px #3ad5c9, 0 0 30px #3ad5c9;
+        }
+
+        19%,
+        21%,
+        23%,
+        26%,
+        55% {
+          opacity: 0.4;
+          text-shadow: none;
+        }
+
+        50% {
+          opacity: 0.2;
+          text-shadow: 0 0 3px #3ad5c988;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="camera-frame" id="frame">
+      <div class="clock" id="clock">--:--</div>
+    </div>
+
+    <script>
+      const frame = document.getElementById("frame");
+      const FRAME_WIDTH = 640;
+      const FRAME_HEIGHT = 360;
+      const PARTICLE_COUNT = 8;
+
+      function random(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      function createParticle() {
+        const p = document.createElement("div");
+        p.className = "particle";
+        p.style.left = random(0, FRAME_WIDTH) + "px";
+        p.style.top = random(0, FRAME_HEIGHT) + "px";
+        frame.appendChild(p);
+
+        let x = parseFloat(p.style.left);
+        let y = parseFloat(p.style.top);
+        const dx = random(-0.5, 0.5);
+        const dy = random(-0.5, 0.5);
+
+        function animate() {
+          x += dx;
+          y += dy;
+
+          // Wrap around
+          if (x < 0) x = FRAME_WIDTH;
+          if (x > FRAME_WIDTH) x = 0;
+          if (y < 0) y = FRAME_HEIGHT;
+          if (y > FRAME_HEIGHT) y = 0;
+
+          p.style.left = x + "px";
+          p.style.top = y + "px";
+
+          requestAnimationFrame(animate);
+        }
+
+        animate();
+      }
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        createParticle();
+      }
+      function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, "0");
+        const m = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("clock").textContent = `${h}:${m}`;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+    </script>
+  </body>
+</html>
