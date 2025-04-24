@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Point Néon Bug</title>
+    <style>
+      body {
+        background-color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .neon-point {
+        width: 12px;
+        height: 12px;
+        background-color: #ff0040;
+        border-radius: 50%;
+        box-shadow: 0 0 15px #ff0040, 0 0 30px #ff0040, 0 0 45px #ff0040;
+        animation: glitch-flicker 4s infinite;
+      }
+
+      @keyframes glitch-flicker {
+        0%,
+        89% {
+          opacity: 1;
+          box-shadow: 0 0 20px #ff0040;
+        }
+
+        90% {
+          opacity: 0;
+          box-shadow: 0 0 0 transparent;
+        }
+
+        91%,
+        91.5% {
+          opacity: 1;
+          box-shadow: 0 0 30px #ff0040;
+        }
+
+        92% {
+          opacity: 0.3;
+          box-shadow: 0 0 5px #ff0040;
+        }
+
+        93%,
+        95% {
+          opacity: 1;
+          box-shadow: 0 0 20px #ff0040;
+        }
+
+        96% {
+          opacity: 0.1;
+          box-shadow: 0 0 2px #ff0040;
+        }
+
+        97%,
+        100% {
+          opacity: 1;
+          box-shadow: 0 0 25px #ff0040;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="neon-point"></div>
+  </body>
+</html>

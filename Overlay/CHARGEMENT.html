@@ -16,19 +16,21 @@
         margin: 0;
       }
 
-      .container {
+      .container,
+      .boot-screen {
         width: 90%;
         max-width: 600px;
         text-align: center;
       }
 
       .percentage {
-        font-size: 5rem;
+        font-size: 2rem;
         margin-bottom: 20px;
       }
-      .sentencerandom{
+
+      .sentencerandom {
         font-size: 1rem;
-        margin-top:10px;
+        margin-top: 10px;
       }
 
       .progress-bar-container {
@@ -53,14 +55,35 @@
       .square.active {
         background-color: #00ff00;
       }
+
+      .hidden {
+        display: none;
+      }
+
+      .boot-line {
+        font-size: 1.1rem;
+        white-space: pre;
+      }
+
+      .loading-dots {
+        display: inline-block;
+        animation: blink 1s steps(0, end) infinite;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="percentage" id="percentage">0%</div>
-      <div class="progress-bar-container" id="progressBarContainer">
+    <!-- Écran de démarrage -->
+    <div class="boot-screen" id="bootScreen">
+      <div class="boot-line">
+        Démarrage de la machine<span class="loading-dots" id="dots"></span>
       </div>
-      <div class="sentencerandom" id="phraserandom">
+    </div>
+
+    <!-- Interface principale -->
+    <div class="container hidden" id="mainContainer">
+      <div class="percentage" id="percentage">0%</div>
+      <div class="progress-bar-container" id="progressBarContainer"></div>
+      <div class="sentencerandom" id="phraserandom"></div>
     </div>
 
     <script>
@@ -68,29 +91,47 @@
         "J'arrive dans 5 min",
         "La co est pourrie, c'est long...",
         "Transfert des emotes dans la matrice",
-        "En attente de viewers"
+        "En attente de viewers",
+        "Echauffement du streamer",
+        "J'arrive laisse moi me préparer ca va la",
+        "Normalement c'est 5 minutes",
       ];
       const duration = 300;
       const totalSquares = 50;
       let currentTime = 0;
-
       let index = 0;
+
+      const percentageText = document.getElementById("percentage");
+      const progressBarContainer = document.getElementById(
+        "progressBarContainer"
+      );
+      const phraserandom = document.getElementById("phraserandom");
+      const bootScreen = document.getElementById("bootScreen");
+      const mainContainer = document.getElementById("mainContainer");
+      const dots = document.getElementById("dots");
+
+      let dotCount = 0;
+      const dotInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4; // cycle de 0 à 3
+        dots.textContent = ".".repeat(dotCount);
+      }, 500);
+
+      // Après 10 secondes : passer à l'interface de chargement
+      setTimeout(() => {
+        clearInterval(dotInterval);
+        bootScreen.classList.add("hidden");
+        mainContainer.classList.remove("hidden");
+        startLoading();
+      }, 10000);
 
       function updatePhrase() {
         phraserandom.textContent = listphrase[index];
-        index = (index + 1) % listphrase.length; // Boucle à la fin de la liste
+        index = (index + 1) % listphrase.length;
       }
 
-      // Affiche immédiatement la première phrase
       updatePhrase();
-
-      // Change toutes les 60 secondes (60000 ms)
       setInterval(updatePhrase, 10000);
 
-      const percentageText = document.getElementById("percentage");
-      const progressBarContainer = document.getElementById("progressBarContainer");
-
-      // Générer les petits carrés
       const squares = [];
       for (let i = 0; i < totalSquares; i++) {
         const square = document.createElement("div");
@@ -99,25 +140,23 @@
         squares.push(square);
       }
 
-      // Animation
-      const interval = setInterval(() => {
-        currentTime++;
-        const percent = Math.min((currentTime / duration) * 100, 100);
-        percentageText.textContent = `${Math.floor(percent)}%`;
+      function startLoading() {
+        const interval = setInterval(() => {
+          currentTime++;
+          const percent = Math.min((currentTime / duration) * 100, 100);
+          percentageText.textContent = `${Math.floor(percent)}%`;
 
-        const activeSquares = Math.floor((percent / 100) * totalSquares);
-        squares.forEach((square, index) => {
-          if (index < activeSquares) {
-            square.classList.add("active");
-          } else {
-            square.classList.remove("active");
+          const activeSquares = Math.floor((percent / 100) * totalSquares);
+          squares.forEach((square, index) => {
+            square.classList.toggle("active", index < activeSquares);
+          });
+
+          if (currentTime >= duration) {
+            clearInterval(interval);
+            percentageText.textContent = `Download Completed`;
           }
-        });
-        if (currentTime >= duration) {
-          clearInterval(interval);
-          percentageText.textContent = `Downloaded Completed`;
-        }
-      }, 1000);
+        }, 1000);
+      }
     </script>
   </body>
 </html>
