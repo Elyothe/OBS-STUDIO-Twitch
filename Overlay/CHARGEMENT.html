@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Compteur Rétro</title>
+    <style>
+      body {
+        font-family: "Courier New", monospace;
+        background-color: #000;
+        color: #00ff00;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 600px;
+        text-align: center;
+      }
+
+      .percentage {
+        font-size: 5rem;
+        margin-bottom: 20px;
+      }
+      .sentencerandom{
+        font-size: 1rem;
+        margin-top:10px;
+      }
+
+      .progress-bar-container {
+        width: 100%;
+        height: 40px;
+        background-color: #222;
+        border: 2px solid #00ff00;
+        display: flex;
+        flex-direction: row;
+        gap: 2px;
+        padding: 4px;
+        box-sizing: border-box;
+      }
+
+      .square {
+        flex-grow: 1;
+        background-color: #111;
+        border: 1px solid #003300;
+        transition: background-color 0.3s;
+      }
+
+      .square.active {
+        background-color: #00ff00;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="percentage" id="percentage">0%</div>
+      <div class="progress-bar-container" id="progressBarContainer">
+      </div>
+      <div class="sentencerandom" id="phraserandom">
+    </div>
+
+    <script>
+      const listphrase = [
+        "J'arrive dans 5 min",
+        "La co est pourrie, c'est long...",
+        "Transfert des emotes dans la matrice",
+        "En attente de viewers"
+      ];
+      const duration = 300;
+      const totalSquares = 50;
+      let currentTime = 0;
+
+      let index = 0;
+
+      function updatePhrase() {
+        phraserandom.textContent = listphrase[index];
+        index = (index + 1) % listphrase.length; // Boucle à la fin de la liste
+      }
+
+      // Affiche immédiatement la première phrase
+      updatePhrase();
+
+      // Change toutes les 60 secondes (60000 ms)
+      setInterval(updatePhrase, 10000);
+
+      const percentageText = document.getElementById("percentage");
+      const progressBarContainer = document.getElementById("progressBarContainer");
+
+      // Générer les petits carrés
+      const squares = [];
+      for (let i = 0; i < totalSquares; i++) {
+        const square = document.createElement("div");
+        square.classList.add("square");
+        progressBarContainer.appendChild(square);
+        squares.push(square);
+      }
+
+      // Animation
+      const interval = setInterval(() => {
+        currentTime++;
+        const percent = Math.min((currentTime / duration) * 100, 100);
+        percentageText.textContent = `${Math.floor(percent)}%`;
+
+        const activeSquares = Math.floor((percent / 100) * totalSquares);
+        squares.forEach((square, index) => {
+          if (index < activeSquares) {
+            square.classList.add("active");
+          } else {
+            square.classList.remove("active");
+          }
+        });
+        if (currentTime >= duration) {
+          clearInterval(interval);
+          percentageText.textContent = `Downloaded Completed`;
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>
